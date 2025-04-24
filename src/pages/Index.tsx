@@ -10,35 +10,31 @@ import { toast } from '@/hooks/use-toast';
 
 const CryptoTracker: React.FC = () => {
   useEffect(() => {
-    // Start live data updates
-    const stopUpdates = startLiveUpdates(5000); // Update every 5 seconds
+    const stopUpdates = startLiveUpdates(5000);
     
-    // Show toast notification
     toast({
       title: "Live Updates Started",
       description: "Cryptocurrency data will refresh every 5 seconds",
     });
     
-    // Clean up on component unmount
     return () => {
       stopUpdates();
     };
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container px-4 sm:px-8">
+    <div className="min-h-screen bg-background">
+      <div className="container px-4 sm:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Crypto Price Tracker</h1>
-          <p className="text-gray-600 mt-2">Real-time cryptocurrency price tracker with live updates from CoinGecko API</p>
+          <h1 className="text-3xl font-bold text-foreground">Crypto Price Tracker</h1>
+          <p className="text-muted-foreground mt-2">Real-time cryptocurrency price tracker with live updates</p>
         </div>
         
         <FilterBar />
         <AssetTable />
         
-        <div className="mt-8 text-center text-xs text-gray-500">
-          <p>Disclaimer: This app uses free-tier CoinGecko API which may have rate limits.</p>
-          <p className="mt-1">Data updates automatically every 5 seconds.</p>
+        <div className="mt-8 text-center text-xs text-muted-foreground">
+          <p>Data updates automatically every 5 seconds.</p>
         </div>
       </div>
     </div>

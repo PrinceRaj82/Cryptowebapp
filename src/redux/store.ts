@@ -1,43 +1,57 @@
 
-import { configureStore, createSelector } from '@reduxjs/toolkit';
-import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // localStorage
-import { combineReducers } from 'redux';
-
+import { configureStore, combineReducers, createSelector } from '@reduxjs/toolkit';
+import { 
+  persistStore, 
+  persistReducer, 
+  FLUSH, 
+  REHYDRATE, 
+  PAUSE, 
+  PERSIST, 
+  PURGE, 
+  REGISTER 
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 import assetsReducer from './assetsSlice';
 import filterReducer from './filterSlice';
-import { Asset, FilterType } from '../types/crypto';
+import { Asset, FilterType, SortColumn } from '../types/crypto';
 
-// Configure persist for filter state only
-const filterPersistConfig = {
-  key: 'filter',
+// Configuration for redux-persist
+const persistConfig = {
+  key: 'root',
+  version: 1,
   storage,
-  whitelist: ['sort', 'filter'] // only persist these keys
+  whitelist: ['filter'], // Only persist filter settings
 };
 
 const rootReducer = combineReducers({
   assets: assetsReducer,
-  filter: persistReducer(filterPersistConfig, filterReducer)
+  filter: filterReducer,
 });
 
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
-      }
-    })
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
 
 export const persistor = persistStore(store);
 
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
 // Selectors
 export const selectAssets = (state: RootState) => state.assets.assets;
-export const selectFilters = (state: RootState) => state.filter;
 export const selectLoading = (state: RootState) => state.assets.loading;
 export const selectError = (state: RootState) => state.assets.error;
 export const selectLastUpdated = (state: RootState) => state.assets.lastUpdated;
+export const selectFilters = (state: RootState) => state.filter;
 
 // Memoized selector to get filtered & sorted assets
 export const selectFilteredAssets = createSelector(
@@ -77,9 +91,6 @@ export const selectFilteredAssets = createSelector(
     const { column, direction } = filters.sort;
     
     return filteredAssets.sort((a, b) => {
-      const aValue = a[column];
-      const bValue = b[column];
-      
       // Special handling for name column to sort by name
       if (column === 'name') {
         return direction === 'asc'
@@ -87,15 +98,16 @@ export const selectFilteredAssets = createSelector(
           : b.name.localeCompare(a.name);
       }
       
-      // Default numeric comparison
+      // Get the values, ensuring they're treated as numbers
+      const aValue = typeof a[column] === 'number' ? a[column] : 0;
+      const bValue = typeof b[column] === 'number' ? b[column] : 0;
+      
+      // Perform numeric comparison
       if (direction === 'asc') {
-        return (aValue || 0) - (bValue || 0);
+        return Number(aValue) - Number(bValue);
       } else {
-        return (bValue || 0) - (aValue || 0);
+        return Number(bValue) - Number(aValue);
       }
     });
   }
 );
-
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;

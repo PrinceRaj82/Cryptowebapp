@@ -51,10 +51,10 @@ const AssetTable: React.FC = () => {
         </div>
       )}
       
-      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8 scrollbar-none">
         <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
           <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-            {isLoading && filteredAssets.length === 0 && (
+            {isLoading && filteredAssets && filteredAssets.length === 0 && (
               <div className="text-center p-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
                 <p className="mt-2 text-gray-500">Loading cryptocurrency data...</p>
@@ -69,11 +69,11 @@ const AssetTable: React.FC = () => {
             )}
             
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort('id')}
                   >
                     <div className="flex items-center">
@@ -82,7 +82,7 @@ const AssetTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort('name')}
                   >
                     <div className="flex items-center">
@@ -91,7 +91,7 @@ const AssetTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort('price')}
                   >
                     <div className="flex items-center">
@@ -100,7 +100,7 @@ const AssetTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort('percent_change_1h')}
                   >
                     <div className="flex items-center">
@@ -109,7 +109,7 @@ const AssetTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort('percent_change_24h')}
                   >
                     <div className="flex items-center">
@@ -118,7 +118,7 @@ const AssetTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort('percent_change_7d')}
                   >
                     <div className="flex items-center">
@@ -127,7 +127,7 @@ const AssetTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort('market_cap')}
                   >
                     <div className="flex items-center">
@@ -138,7 +138,7 @@ const AssetTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort('volume_24h')}
                   >
                     <div className="flex items-center">
@@ -149,7 +149,7 @@ const AssetTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort('circulating_supply')}
                   >
                     <div className="flex items-center">
@@ -160,7 +160,7 @@ const AssetTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     <div className="flex items-center">
                       Last 7 Days
@@ -168,13 +168,13 @@ const AssetTable: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredAssets && Array.isArray(filteredAssets) && filteredAssets.map((asset: Asset) => (
                   <AssetRow key={asset.id} asset={asset} />
                 ))}
                 {(!filteredAssets || !Array.isArray(filteredAssets) || filteredAssets.length === 0) && !isLoading && !error && (
                   <tr>
-                    <td colSpan={10} className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan={10} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                       No assets found matching your criteria
                     </td>
                   </tr>

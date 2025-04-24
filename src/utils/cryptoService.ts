@@ -2,6 +2,7 @@
 import { store } from '../redux/store';
 import { fetchCryptoData } from '../redux/assetsSlice';
 import { AppDispatch } from '../redux/store';
+import { startWebSocketSimulation } from './simulateWebSocket';
 
 let intervalId: number | null = null;
 
@@ -11,16 +12,15 @@ export const startLiveUpdates = (interval = 5000) => {
   // Initial fetch
   dispatch(fetchCryptoData());
   
-  // Set up polling interval
-  intervalId = window.setInterval(() => {
-    dispatch(fetchCryptoData());
-  }, interval);
+  // Start WebSocket simulation
+  const stopSimulation = startWebSocketSimulation();
   
   return () => {
     if (intervalId !== null) {
       clearInterval(intervalId);
       intervalId = null;
     }
+    stopSimulation();
   };
 };
 
