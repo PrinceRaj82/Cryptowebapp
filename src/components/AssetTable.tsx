@@ -2,7 +2,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Asset, SortColumn } from '../types/crypto';
-import { RootState, selectFilteredAssets } from '../redux/store';
+import { RootState, selectFilteredAssets, selectLoading, selectError, selectLastUpdated } from '../redux/store';
 import { setSort } from '../redux/filterSlice';
 import AssetRow from './AssetRow';
 import InfoTooltip from './InfoTooltip';
@@ -11,6 +11,9 @@ import { ArrowUp, ArrowDown } from 'lucide-react';
 const AssetTable: React.FC = () => {
   const dispatch = useDispatch();
   const filteredAssets = useSelector(selectFilteredAssets);
+  const isLoading = useSelector(selectLoading);
+  const error = useSelector(selectError);
+  const lastUpdated = useSelector(selectLastUpdated);
   const { column: sortColumn, direction: sortDirection } = useSelector(
     (state: RootState) => state.filter.sort
   );
@@ -34,11 +37,37 @@ const AssetTable: React.FC = () => {
     circulating_supply: "The number of coins or tokens that have been issued so far and are publicly available."
   };
 
+  const formatLastUpdated = (timestamp: number | null) => {
+    if (!timestamp) return 'Never';
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString();
+  };
+
   return (
     <div className="flex flex-col mt-6">
+      {lastUpdated && (
+        <div className="text-right text-sm text-gray-500 mb-2">
+          Last updated: {formatLastUpdated(lastUpdated)}
+        </div>
+      )}
+      
       <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
           <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+            {isLoading && filteredAssets.length === 0 && (
+              <div className="text-center p-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+                <p className="mt-2 text-gray-500">Loading cryptocurrency data...</p>
+              </div>
+            )}
+            
+            {error && (
+              <div className="text-center p-4 text-red-500">
+                <p>Error loading data: {error}</p>
+                <p className="text-sm mt-2">Please try again later or check your internet connection.</p>
+              </div>
+            )}
+            
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -143,7 +172,7 @@ const AssetTable: React.FC = () => {
                 {filteredAssets && Array.isArray(filteredAssets) && filteredAssets.map((asset: Asset) => (
                   <AssetRow key={asset.id} asset={asset} />
                 ))}
-                {(!filteredAssets || !Array.isArray(filteredAssets) || filteredAssets.length === 0) && (
+                {(!filteredAssets || !Array.isArray(filteredAssets) || filteredAssets.length === 0) && !isLoading && !error && (
                   <tr>
                     <td colSpan={10} className="px-6 py-4 text-center text-gray-500">
                       No assets found matching your criteria

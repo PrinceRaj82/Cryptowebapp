@@ -5,16 +5,23 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from '../redux/store';
 import AssetTable from '../components/AssetTable';
 import FilterBar from '../components/FilterBar';
-import { startWebSocketSimulation } from '../utils/simulateWebSocket';
+import { startLiveUpdates, stopLiveUpdates } from '../utils/cryptoService';
+import { toast } from '@/hooks/use-toast';
 
 const CryptoTracker: React.FC = () => {
   useEffect(() => {
-    // Start simulated WebSocket updates
-    const stopWebSocketSimulation = startWebSocketSimulation();
+    // Start live data updates
+    const stopUpdates = startLiveUpdates(5000); // Update every 5 seconds
+    
+    // Show toast notification
+    toast({
+      title: "Live Updates Started",
+      description: "Cryptocurrency data will refresh every 5 seconds",
+    });
     
     // Clean up on component unmount
     return () => {
-      stopWebSocketSimulation();
+      stopUpdates();
     };
   }, []);
 
@@ -23,15 +30,15 @@ const CryptoTracker: React.FC = () => {
       <div className="container px-4 sm:px-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Crypto Price Tracker</h1>
-          <p className="text-gray-600 mt-2">Real-time cryptocurrency price tracker with live updates</p>
+          <p className="text-gray-600 mt-2">Real-time cryptocurrency price tracker with live updates from CoinGecko API</p>
         </div>
         
         <FilterBar />
         <AssetTable />
         
         <div className="mt-8 text-center text-xs text-gray-500">
-          <p>Disclaimer: This is a demonstration app with simulated price movements.</p>
-          <p className="mt-1">Data updates automatically every 1-2 seconds to simulate real-time changes.</p>
+          <p>Disclaimer: This app uses free-tier CoinGecko API which may have rate limits.</p>
+          <p className="mt-1">Data updates automatically every 5 seconds.</p>
         </div>
       </div>
     </div>

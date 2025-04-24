@@ -8,7 +8,9 @@ interface ChartCellProps {
 }
 
 const ChartCell: React.FC<ChartCellProps> = ({ data, isPositive }) => {
-  const chartData = data.map((value, index) => ({ value }));
+  const chartData = Array.isArray(data) && data.length > 0
+    ? data.map((value, index) => ({ value }))
+    : Array(24).fill({ value: 0 }); // Default empty chart if no data
   
   return (
     <div className="w-32 h-16">

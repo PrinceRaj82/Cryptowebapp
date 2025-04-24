@@ -1,9 +1,8 @@
 
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, createSelector } from '@reduxjs/toolkit';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // localStorage
 import { combineReducers } from 'redux';
-import { createSelector } from '@reduxjs/toolkit';
 
 import assetsReducer from './assetsSlice';
 import filterReducer from './filterSlice';
@@ -36,6 +35,9 @@ export const persistor = persistStore(store);
 // Selectors
 export const selectAssets = (state: RootState) => state.assets.assets;
 export const selectFilters = (state: RootState) => state.filter;
+export const selectLoading = (state: RootState) => state.assets.loading;
+export const selectError = (state: RootState) => state.assets.error;
+export const selectLastUpdated = (state: RootState) => state.assets.lastUpdated;
 
 // Memoized selector to get filtered & sorted assets
 export const selectFilteredAssets = createSelector(

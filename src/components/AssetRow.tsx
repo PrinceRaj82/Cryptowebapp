@@ -13,7 +13,7 @@ const AssetRow: React.FC<AssetRowProps> = ({ asset }) => {
   const isRecentlyUpdated = asset.updatedAt && Date.now() - asset.updatedAt < 2000;
   
   const animationClass = isRecentlyUpdated 
-    ? asset.price > asset.chart_data[asset.chart_data.length - 2]
+    ? asset.price > (asset.chart_data[asset.chart_data.length - 2] || 0)
       ? 'animate-price-pulse-positive' 
       : 'animate-price-pulse-negative'
     : '';
@@ -30,24 +30,13 @@ const AssetRow: React.FC<AssetRowProps> = ({ asset }) => {
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center">
-          <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
-            {asset.symbol === "BTC" && (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bitcoin text-amber-500 h-5 w-5"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5 17.729m6.767 1.36 1.215-6.894m-7.982 5.26 9.19-5.227"/><rect x="7" y="4" width="10" height="16" rx="2"/><path d="M12 7v3m0 4v3"/></svg>
-            )}
-            {asset.symbol === "ETH" && (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500 h-5 w-5"><path d="M12 2l-7 12 7 2 7-2-7-12z"/><path d="M12 22l7-12-7-2-7 2 7 12z"/></svg>
-            )}
-            {asset.symbol === "USDT" && (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500 h-5 w-5"><circle cx="12" cy="12" r="10"/><path d="M9 12h6"/><path d="M12 9v6"/></svg>
-            )}
-            {asset.symbol === "XRP" && (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 h-5 w-5"><path d="M16.54 7L12 2.46 7.46 7"/><circle cx="12" cy="12" r="10"/><path d="m7.46 17 4.54 4.54L16.54 17"/></svg>
-            )}
-            {asset.symbol === "BNB" && (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-400 h-5 w-5"><circle cx="12" cy="12" r="10"/><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-            )}
-            {asset.symbol === "SOL" && (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-500 h-5 w-5"><circle cx="12" cy="12" r="10"/><path d="M8 14h8"/><path d="M8 10h8"/></svg>
+          <div className="flex-shrink-0 h-8 w-8 rounded-full overflow-hidden">
+            {asset.logo ? (
+              <img src={asset.logo} alt={`${asset.name} logo`} className="h-full w-full object-cover" />
+            ) : (
+              <div className="h-full w-full bg-gray-200 flex items-center justify-center text-xs">
+                {asset.symbol.substring(0, 2)}
+              </div>
             )}
           </div>
           <div className="ml-4">
